@@ -1,0 +1,45 @@
+@istest
+public class AddPrimaryContactTest {
+    
+    @TestSetup
+    static void setup(){
+        
+        List<Account>accnt=new List<Account>();
+        
+        Contact test=new Contact();
+        test.lastname='test';
+        
+        for(Integer i=0;i<250;i++){
+            Account ac=new Account();
+            if(i<201){
+            ac.Name='Test'+i;  
+                 ac.BillingState='NY';
+            }
+            else{
+                ac.Name='Test'+i;
+                ac.BillingState='CL';
+            }
+
+            accnt.add(ac);
+        }
+        insert accnt;
+        insert test;
+        
+    }
+    
+    @istest
+    static void testing(){
+        Contact testContact = [SELECT Id FROM Contact WHERE LastName = 'test' LIMIT 1];
+        Test.startTest();
+        Id JobId=System.enqueueJob(new AddPrimaryContact(testContact,'NY'));
+        Test.stopTest();
+        
+        List<Contact>conss=[select id,AccountId from contact where Account.BillingState = 'NY'];
+        System.assertEquals(conss.size(),200);
+        
+            
+    }
+    
+    
+
+}
